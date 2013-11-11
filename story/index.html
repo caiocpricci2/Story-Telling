@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+<script src="http://192.168.1.110:1234/target/target-script-min.js"></script>
 <script type="text/javascript">
 
 
@@ -43,13 +44,19 @@ var _TOUCHED = false;
 		_HEIGHT = $(window).innerHeight();
 
   		$body.height((_HEIGHT*_ITEMS.length)-22);
-				layoutImages();
-		});
+		layoutImages(false);
+
+	});
 
 
   window.onload = function() {
+
 		$body = $("body");
         _HEIGHT = $(window).innerHeight();
+		var isIpadIos7 = navigator.userAgent.match(/(iPad|iPhone);.*CPU.*OS 7_\d/i); //fix the problem with the ghost 20 px on landscape ipads
+		if (isIpadIos7 && (_HEIGHT === 691 || _HEIGHT === 692)) {
+			_HEIGHT-=20;
+		}
         $body.height((_HEIGHT*_ITEMS.length));
 
 		$( document ).on("swiperight", navigateToNextItem)
@@ -62,6 +69,7 @@ var _TOUCHED = false;
 			if (_TOUCHED) {
 				_TOUCHED = false;
 				navigateToNextItem();
+				//navigateToItem(_ITEMS.length);
 			}
 		});
 		document.ontouchstart = function(e){
@@ -137,6 +145,8 @@ var _TOUCHED = false;
 
 	function layoutImages(firstRun)
 	{
+
+		$('.item').height(_HEIGHT);
 		var lastItemHeight=0;
 		for (var i=0;i<_ITEMS.length;i++)
 		{
@@ -166,12 +176,19 @@ var _TOUCHED = false;
 	}
 
 	function navigateToNextItem(){
+
+		if (_CURRENT_ITEM >= _ITEMS.length-1) {
+			return;
+		}
 		_CURRENT_ITEM = getCurrentItem() +1;
 		navigateToItem(_CURRENT_ITEM);
 
 	}
 
 	function navigateToPrevItem() {
+		if (_CURRENT_ITEM <=0) {
+			return;
+		}
 	    _CURRENT_ITEM = getCurrentItem() -1;
 		navigateToItem(_CURRENT_ITEM);
 	}
@@ -199,7 +216,7 @@ var _TOUCHED = false;
 		<h2>by Caio Ricci</h2>
 
 		<p>There are many ways of telling a story. This is just one of them.
-			<br/><br/>Swipe left and right, use the arrow keys or press the button below to start.</p>
+			<br/><br/>Swipe right, use the arrow keys or press the button below to start.</p>
 
 	</div>
 
